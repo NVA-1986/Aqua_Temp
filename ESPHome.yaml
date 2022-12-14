@@ -1,0 +1,69 @@
+esphome:
+  name: aqua-temp
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "KEY"
+
+ota:
+  password: "PASS"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Aqua-Temp Fallback Hotspot"
+    password: "PASS"
+
+captive_portal:
+    
+# WEB Server
+web_server:
+  port: 80
+
+
+dallas:
+  - pin: GPIO12
+
+sensor:
+  - platform: dallas
+    address: 0x30000008c83xxxxx
+    name: "Temperature_Aquarium"
+    id: tempaqua
+
+  - platform: wifi_signal
+    name: "a_master_mini_d1 Signal Wi-Fi"
+    update_interval: 60s
+
+
+
+font:
+  - file: 'slkscr.ttf'
+    id: font1
+    size: 48
+
+  - file: 'BebasNeue-Regular.ttf'
+    id: font2
+    size: 48
+
+
+i2c:
+  sda: D1
+  scl: D2
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    # reset_pin: D0
+    address: 0x3C
+    lambda: |-
+      it.printf(0, 0, id(font2), "%.1f°", id(tempaqua).state);
